@@ -48,13 +48,13 @@ const Todo = () => {
       <div className="container">
         <div className="row">
           <div className="col-8 offset-2 my-5">
-            <div className="card mb-3">
-              <div className="card-body">
-                <form onSubmit={handleSubmit}>
+            <div className="card mb-3 site-header">
+              <div className="card-body ">
+                <form className="body-form" onSubmit={handleSubmit}>
                   <div className="input-group">
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control site-body-input"
                       name="todo"
                       value={inputValue}
                       onChange={handleInputChange}
@@ -78,18 +78,18 @@ const Todo = () => {
                 </button>
               </div>
             </div>
-            <h1 className="text-center">Todo List</h1>
+            <h1 className="text-center todo-list">Todo List</h1>
             <div className="row">
-              <div className="col-8 offset-2">
-                <ul className="list-group">
+              <div className="col-12">
+                <ul className="list-group site-list">
                   {todos.map((todo, index) => (
                     <li
-                      className="list-group-item d-flex justify-content-between text-align-center align-items-center"
+                      className="list-group-item site-list d-flex justify-content-between text-align-center align-items-center"
                       key={todo.id}
                     >
-                      <div className="d-flex text-align-center item-todo">
+                      <div className="d-flex text-align-center item-todo site-num">
                         {index + 1}. &nbsp;
-                        <p>{todo.value}</p>
+                        <p className="list-title">{todo.value}</p>
                         &nbsp;
                       </div>
                       <div>
