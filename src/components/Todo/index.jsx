@@ -1,46 +1,67 @@
 
 import { useState } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import editIcon from "../../assets/edit.svg"
-import deleteIcon from "../../assets/trash-2.svg"
+import editIcon from "../../assets/edit.svg";
+import deleteIcon from "../../assets/trash-2.svg";
 import "./main.css";
 
 const Todo = () => {
-  const [todos, setTodos] = useState([]);
-  const [inputValue, setInputValue] = useState("");
+  const [persons, setPersons] = useState([]);
+  const [nameValue, setNameValue] = useState("");
+  const [surnameValue, setSurnameValue] = useState("");
   const [modal, setModal] = useState(false);
-  const [selectedTodo, setSelectedTodo] = useState(null);
+  const [selectedPerson, setSelectedPerson] = useState(null);
   const toggle = () => setModal(!modal);
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    if (inputValue.trim()) {
-      const newTodo = {
+    if (nameValue.trim() && surnameValue.trim()) {
+      const newPerson = {
         id: Date.now(),
-        value: inputValue,
+        name: nameValue,
+        surname: surnameValue,
       };
-      setTodos([...todos, newTodo]);
-      setInputValue("");
+      setPersons([...persons, newPerson]);
+      setNameValue("");
+      setSurnameValue("");
     }
   };
 
-  const handleInputChange = (evt) => {
-    setInputValue(evt.target.value);
+  const handleNameInputChange = (evt) => {
+    setNameValue(evt.target.value);
+  };
+
+  const handleSurnameInputChange = (evt) => {
+    setSurnameValue(evt.target.value);
   };
 
   const handleEditSubmit = (evt) => {
     evt.preventDefault();
-    const newTodos = [...todos];
-    const todoIndex = selectedTodo.index;
-    newTodos[todoIndex].value = selectedTodo.value;
-    setTodos(newTodos);
-    setSelectedTodo(null);
-    toggle();
+    if (
+      selectedPerson &&
+      selectedPerson.name.trim() &&
+      selectedPerson.surname.trim() 
+      
+    ) {
+      setPersons(
+        persons.map((person) =>
+          person.id === selectedPerson.id ? selectedPerson : person
+        )
+      );
+      setSelectedPerson(null);
+      toggle();
+    }
   };
 
   const handleDelete = (id) => {
-    const newTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(newTodos);
+    const newPersons = persons.filter((person) => person.id !== id);
+    setPersons(newPersons);
+
+      // const personToDelete = persons.find((person) => person.id === id);
+      // if (personToDelete.alive) {
+      //   const newPersons = persons.filter((person) => person.id !== id);
+      //   setPersons(newPersons);
+      // }
   };
 
   return (
@@ -55,52 +76,64 @@ const Todo = () => {
                     <input
                       type="text"
                       className="form-control site-body-input"
-                      name="todo"
-                      value={inputValue}
-                      onChange={handleInputChange}
-                      placeholder="Add todo"
+                      name="name"
+                      value={nameValue}
+                      onChange={handleNameInputChange}
+                      placeholder="Name"
                     />
+                    <input
+                      type="text"
+                      className="form-control site-body-input"
+                      name="surname"
+                      value={surnameValue}
+                      onChange={handleSurnameInputChange}
+                      placeholder="Surname"
+                    />
+                    {/* <input
+                      type="checkbox"
+                      id="alive"
+                      name="alive"
+                      value="alive"
+                    /> */}
+                    {/* <label for="alive">alive</label>
+
+                    <input type="checkbox" id="died" name="died" value="died" />
+                    <label for="died">died</label> */}
+
                     <button className="btn btn-primary" type="submit">
                       Add
                     </button>
                   </div>
                 </form>
               </div>
-              <div className="card-footer d-flex justify-content-center">
-                <button className="btn btn-primary" type="button">
-                  All
-                </button>
-                <button className="btn btn-primary mx-3" type="button">
-                  Completed
-                </button>
-                <button className="btn btn-primary" type="button">
-                  Uncompleted
-                </button>
-              </div>
             </div>
-            <h1 className="text-center todo-list">Todo List</h1>
+            <h1 className="text-center todo-list">Persons List</h1>
             <div className="row">
               <div className="col-12">
                 <ul className="list-group site-list">
-                  {todos.map((todo, index) => (
+                  {persons.map((person) => (
                     <li
                       className="list-group-item site-list d-flex justify-content-between text-align-center align-items-center"
-                      key={todo.id}
+                      key={person.id}
                     >
                       <div className="d-flex text-align-center item-todo site-num">
-                        {index + 1}. &nbsp;
-                        <p className="list-title">{todo.value}</p>
-                        &nbsp;
+                        {person.name} {person.surname}
                       </div>
                       <div>
+                        <button
+                        className="resume-btn"
+                          onClick={() => {
+                            setSelectedPerson(person);
+                            toggle();
+                          }}
+                        >
+                          Resume
+                        </button>
                         <button
                           className="btn btn-success me-3"
                           type="button"
                           onClick={() => {
-                            setSelectedTodo({
-                              index: index,
-                              value: todo.value,
-                            });
+                            setSelectedPerson(person);
                             toggle();
                           }}
                         >
@@ -109,7 +142,7 @@ const Todo = () => {
                         <button
                           className="btn btn-danger"
                           type="button"
-                          onClick={() => handleDelete(todo.id)}
+                          onClick={() => handleDelete(person.id)}
                         >
                           <img src={deleteIcon} alt="delete" />
                         </button>
@@ -124,20 +157,82 @@ const Todo = () => {
       </div>
 
       <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Edit Todo</ModalHeader>
+        <ModalHeader toggle={toggle}>
+          {selectedPerson ? "Edit Person" : "Add Person"}
+        </ModalHeader>
         <ModalBody>
           <form onSubmit={handleEditSubmit}>
             <div className="form-group">
-              <label htmlFor="edit-todo">Edit Todo:</label>
+              <label htmlFor="edit-name">Name:</label>
               <input
                 type="text"
                 className="form-control"
-                id="edit-todo"
-                value={selectedTodo ? selectedTodo.value : ""}
+                id="edit-name"
+                value={selectedPerson ? selectedPerson.name : ""}
                 onChange={(evt) =>
-                  setSelectedTodo({
-                    ...selectedTodo,
-                    value: evt.target.value,
+                  setSelectedPerson({
+                    ...selectedPerson,
+                    name: evt.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="edit-surname">Surname:</label>
+              <input
+                type="text"
+                className="form-control"
+                id="edit-surname"
+                value={selectedPerson ? selectedPerson.surname : ""}
+                onChange={(evt) =>
+                  setSelectedPerson({
+                    ...selectedPerson,
+                    surname: evt.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="edit-amount">Puli:</label>
+              <input
+                type="number"
+                className="form-control"
+                id="edit-amount"
+                value={selectedPerson ? selectedPerson.amount : ""}
+                onChange={(evt) =>
+                  setSelectedPerson({
+                    ...selectedPerson,
+                    amount: evt.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="edit-field">Soha:</label>
+              <input
+                type="text"
+                className="form-control"
+                id="edit-field"
+                value={selectedPerson ? selectedPerson.field : ""}
+                onChange={(evt) =>
+                  setSelectedPerson({
+                    ...selectedPerson,
+                    field: evt.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="edit-age">Yoshi:</label>
+              <input
+                type="number"
+                className="form-control"
+                id="edit-age"
+                value={selectedPerson ? selectedPerson.age : ""}
+                onChange={(evt) =>
+                  setSelectedPerson({
+                    ...selectedPerson,
+                    age: evt.target.value,
                   })
                 }
               />
@@ -146,10 +241,10 @@ const Todo = () => {
         </ModalBody>
         <ModalFooter>
           <button className="btn btn-primary" onClick={handleEditSubmit}>
-            Save
+            {selectedPerson ? "Save" : "Add"}
           </button>
           <button className="btn btn-secondary" onClick={toggle}>
-            No
+            Cancel
           </button>
         </ModalFooter>
       </Modal>

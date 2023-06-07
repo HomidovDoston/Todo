@@ -77,3 +77,9 @@ a {
     color: inherit;
 }
 
+.resume-btn{
+    padding: 6px;
+    border-radius: 10px;
+    background-color: aquamarine;
+    margin-right: 10px;
+}
